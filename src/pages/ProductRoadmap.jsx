@@ -1,8 +1,17 @@
+import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { Plus, Map } from 'lucide-react'
+import RoadmapWeighPointCreator from '../components/RoadmapWeighPointCreator'
 
 export default function ProductRoadmap() {
+  const [modalOpen, setModalOpen] = useState(false)
+  const [roadmapItems, setRoadmapItems] = useState([])
+
+  const handleAddItem = (item) => {
+    setRoadmapItems(prev => [...prev, item])
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -10,7 +19,7 @@ export default function ProductRoadmap() {
           <h1 className="text-3xl font-bold">Product Roadmap</h1>
           <p className="text-zinc-600 mt-1">Company-wide product roadmap items</p>
         </div>
-        <Button>
+        <Button onClick={() => setModalOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Add Roadmap Item
         </Button>
@@ -28,6 +37,12 @@ export default function ProductRoadmap() {
           </div>
         </CardContent>
       </Card>
+
+      <RoadmapWeighPointCreator 
+        isOpen={modalOpen} 
+        onClose={() => setModalOpen(false)}
+        onSubmit={handleAddItem}
+      />
     </div>
   )
 }
