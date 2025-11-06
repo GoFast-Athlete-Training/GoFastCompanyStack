@@ -110,12 +110,6 @@ export default function GFCompanyWelcome() {
     return () => clearTimeout(timer);
   }, [navigate]);
 
-  const handleContinue = () => {
-    if (nextRoute) {
-      navigate(nextRoute);
-    }
-  };
-
   // Show loading state while hydrating
   if (loading) {
   return (
@@ -147,27 +141,12 @@ export default function GFCompanyWelcome() {
     );
   }
 
-  // Show welcome screen with continue button
+  // This should never render since we auto-navigate, but just in case
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 flex items-center justify-center">
-      <div className="text-center max-w-md mx-auto px-4">
-        <div className="bg-white rounded-xl shadow-xl p-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome{staff?.name ? `, ${staff.name.split(' ')[0]}` : ''}!
-          </h1>
-          <p className="text-gray-600 mb-6">
-            {staff?.companyRoles?.[0]?.company?.companyName
-              ? `Ready to manage ${staff.companyRoles[0].company.companyName}?`
-              : 'Ready to set up GoFast Company?'}
-          </p>
-          
-          <button
-            onClick={handleContinue}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium text-lg transition-colors shadow-lg"
-          >
-            Continue →
-          </button>
-        </div>
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-white mx-auto mb-4"></div>
+        <p className="text-white text-xl">Redirecting...</p>
       </div>
     </div>
   );
