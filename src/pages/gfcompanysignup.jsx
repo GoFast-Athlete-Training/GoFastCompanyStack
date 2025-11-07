@@ -34,8 +34,8 @@ export default function GFCompanySignup() {
         email: result.email,
         firstName,
         lastName,
-        photoURL: result.photoURL,
-        role: 'Founder'  // Assign Founder role on initial sign in (validated against roleConfig.js)
+        photoURL: result.photoURL
+        // Role defaults to 'Founder' on backend if not provided
       });
 
       // Response structure: { success: true, staff: {...} }
@@ -90,8 +90,8 @@ export default function GFCompanySignup() {
         email: result.email,
         firstName: emailData.firstName,
         lastName: emailData.lastName,
-        photoURL: result.photoURL,
-        role: 'Founder'  // Assign Founder role on initial sign in (validated against roleConfig.js)
+        photoURL: result.photoURL
+        // Role defaults to 'Founder' on backend if not provided
       });
 
       // Response structure: { success: true, staff: {...} }
