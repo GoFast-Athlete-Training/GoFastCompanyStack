@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getAuth, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithPopup, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithPopup, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -87,7 +87,11 @@ export async function signUpWithEmail(email, password, displayName) {
     const user = result.user;
     
     if (displayName) {
-      await user.updateProfile({ displayName });
+      try {
+        await updateProfile(user, { displayName });
+      } catch (error) {
+        console.warn("⚠️ Firebase: Failed to set displayName:", error);
+      }
     }
     
     console.log('✅ Firebase: Signed up with email:', user.email);
