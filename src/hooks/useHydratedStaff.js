@@ -28,7 +28,6 @@ export default function useHydratedStaff() {
   const companyStr = localStorage.getItem('gfcompany_company');
   const company = companyStr ? JSON.parse(companyStr) : null;
   const companyId = company?.id || localStorage.getItem('gfcompany_companyId');
-  const containerId = company?.containerId || localStorage.getItem('gfcompany_containerId');
   
   // Read company HQ (legacy key)
   const companyHQStr = localStorage.getItem('gfcompany_companyHQ');
@@ -41,10 +40,9 @@ export default function useHydratedStaff() {
     staffId,
     firebaseId,
     role, // Quick access to role
-    // Company data with fallback to persistent company ID
+    // Company data with fallback to persistent company ID (single tenant - hardcoded in config)
     company: company || companyHQ || staff?.company, // Use company or fallback to staff.company
-    companyId: companyId || companyHQId || staff?.companyId || GOFAST_COMPANY_ID, // Fallback to persistent ID
-    containerId
+    companyId: companyId || companyHQId || staff?.companyId || GOFAST_COMPANY_ID // Fallback to persistent ID
   };
 }
 

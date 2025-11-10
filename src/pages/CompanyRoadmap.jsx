@@ -201,7 +201,7 @@ export default function CompanyRoadmap() {
                             </div>
                           )}
                           {item.targetDate && (
-                            <div>
+    <div>
                               <span className="font-medium">Target:</span> {new Date(item.targetDate).toLocaleDateString()}
                             </div>
                           )}

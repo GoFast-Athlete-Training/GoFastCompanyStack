@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes, NavLink, useNavigate, Outlet } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Routes, NavLink, useNavigate, Outlet, Navigate } from 'react-router-dom'
 import GFSplash from './pages/GFSplash'
 import GFCommandCentral from './pages/GFCommandCentral'
 import GFCompanySignin from './pages/gfcompanysignin'
@@ -83,27 +83,28 @@ function Layout() {
   const staffRole = role || staff?.role || 'founder'
 
   // Define navigation items (all owners have access for now)
+  // Routes are nested under /command-central, so use relative paths
   const getMainNavItems = () => {
     return [
       { to: '/command-central', label: 'GF Command Central' },
-      { to: '/roadmap', label: 'Product Roadmap' },
-      { to: '/company-roadmap', label: 'Company Roadmap' },
-      { to: '/tasks', label: 'Task Management' },
+      { to: '/command-central/roadmap', label: 'Product Roadmap' },
+      { to: '/command-central/company-roadmap', label: 'Company Roadmap' },
+      { to: '/command-central/tasks', label: 'Task Management' },
     ]
   }
 
   const getToolsNavItems = () => {
     return [
-      { to: '/financial-spends', label: 'Financial Spending' },
-      { to: '/financial-projections', label: 'Financial Projections' },
-      { to: '/crm', label: 'Company CRM' },
-      { to: '/metrics', label: 'User Metrics' },
+      { to: '/command-central/financial-spends', label: 'Financial Spending' },
+      { to: '/command-central/financial-projections', label: 'Financial Projections' },
+      { to: '/command-central/crm', label: 'Company CRM' },
+      { to: '/command-central/metrics', label: 'User Metrics' },
     ]
   }
 
   const getSettingsNavItems = () => {
     return [
-      { to: '/company-settings', label: 'Company Settings', icon: Settings },
+      { to: '/command-central/company-settings', label: 'Company Settings', icon: Settings },
     ]
   }
 
@@ -237,8 +238,8 @@ export default function App() {
         <Route path="/gfcompanysignup" element={<GFCompanySignup />} />
         <Route path="/gfcompanywelcome" element={<GFCompanyWelcome />} />
         
-        {/* Root redirect - always go through welcome first */}
-        <Route path="/" element={<Navigate to="/gfcompanywelcome" replace />} />
+        {/* Root redirect - go to splash first */}
+        <Route path="/" element={<Navigate to="/gfsplash" replace />} />
         
         {/* Protected Routes with Layout */}
         <Route path="/command-central" element={<Layout />}>

@@ -50,7 +50,6 @@ export default function GFSplash() {
         localStorage.removeItem('gfcompany_email');
         localStorage.removeItem('gfcompany_company');
         localStorage.removeItem('gfcompany_companyId');
-        localStorage.removeItem('gfcompany_containerId');
         localStorage.removeItem('gfcompany_role');
         
         // If Firebase user exists but no CompanyStaff data, sign out Firebase

@@ -73,7 +73,6 @@ export default function CompanySettings() {
         const companyData = response.data.company;
         localStorage.setItem('gfcompany_company', JSON.stringify(companyData));
         localStorage.setItem('gfcompany_companyId', companyData.id);
-        localStorage.setItem('gfcompany_containerId', companyData.containerId);
         
         setCompany(companyData);
         
@@ -91,7 +90,7 @@ export default function CompanySettings() {
         }
         
         // Navigate to command central
-        navigate('/', { replace: true });
+        navigate('/command-central', { replace: true });
       } else {
         console.error('❌ COMPANY SETTINGS: Failed to save company:', response.data.error);
         alert('Failed to save company: ' + (response.data.message || response.data.error));

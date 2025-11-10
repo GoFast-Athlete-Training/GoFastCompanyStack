@@ -25,7 +25,7 @@ export default function ProductRoadmap() {
   }, [])
 
   const loadRoadmapItems = async () => {
-    try {
+      try {
       setLoading(true)
       console.log('🚀 PRODUCT ROADMAP: Loading roadmap items...')
 
@@ -49,7 +49,7 @@ export default function ProductRoadmap() {
       if (error.response?.status === 404 && error.response?.data?.message?.includes('company')) {
         navigate('/company-settings')
         return
-      }
+    }
     } finally {
       setLoading(false)
     }
@@ -108,7 +108,7 @@ export default function ProductRoadmap() {
     try {
       const backendData = mapItemToBackend(item)
 
-      if (editingItem) {
+    if (editingItem) {
         // Update existing item
         console.log('🚀 PRODUCT ROADMAP: Updating item:', editingItem.id)
         const response = await gfcompanyapi.put(`/api/company/roadmap/${editingItem.id}`, backendData)
@@ -129,15 +129,15 @@ export default function ProductRoadmap() {
         if (response.data.success) {
           console.log('✅ PRODUCT ROADMAP: Item created')
           await loadRoadmapItems() // Reload items
-        } else {
+    } else {
           console.error('❌ PRODUCT ROADMAP: Failed to create item:', response.data.error)
           alert('Failed to create item: ' + (response.data.message || response.data.error))
           return
         }
-      }
+    }
 
-      setModalOpen(false)
-      setEditingItem(null)
+    setModalOpen(false)
+    setEditingItem(null)
     } catch (error) {
       console.error('❌ PRODUCT ROADMAP: Error saving item:', error)
       alert('Error saving item: ' + (error.response?.data?.message || error.message))
@@ -148,8 +148,8 @@ export default function ProductRoadmap() {
 
   const handleCloseModal = () => {
     if (!saving) {
-      setModalOpen(false)
-      setEditingItem(null)
+    setModalOpen(false)
+    setEditingItem(null)
     }
   }
 
