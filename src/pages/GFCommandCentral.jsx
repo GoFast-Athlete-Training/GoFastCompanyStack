@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Link } from 'react-router-dom'
 import { Map, Target, ListTodo, Building2 } from 'lucide-react'
+import useHydratedStaff from '../hooks/useHydratedStaff'
 
 const stats = [
   { label: 'Total Users', value: 0 },
@@ -43,6 +44,8 @@ const settingsOptions = [
 ]
 
 export default function GFCommandCentral() {
+  const { staff, staffId, company, companyId, role } = useHydratedStaff();
+  
   return (
     <div className="space-y-6">
       <div>

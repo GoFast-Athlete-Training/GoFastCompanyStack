@@ -17,11 +17,13 @@ import { Button } from './components/ui/button'
 import { useEffect, useState } from 'react'
 import { LogOut, User as UserIcon, Settings } from 'lucide-react'
 import { signOutUser } from './config/firebaseConfig'
+import { getAuth } from 'firebase/auth'
+import useHydratedStaff from './hooks/useHydratedStaff'
 
 function Layout() {
   const [isDark, setIsDark] = useState(false)
-  const [ownerData, setOwnerData] = useState(null)
   const navigate = useNavigate()
+  const { staff, staffId, company, companyId, role, firebaseId } = useHydratedStaff()
 
   useEffect(() => {
     const root = document.documentElement
@@ -33,22 +35,25 @@ function Layout() {
   }, [isDark])
 
   useEffect(() => {
-    const storedStaff = localStorage.getItem('gfcompany_staff')
-    const staffId = localStorage.getItem('gfcompany_staffId')
+    // Always check if we have Firebase auth - if not, redirect to signin
+    const auth = getAuth()
+    const firebaseUser = auth.currentUser
 
-    if (storedStaff && staffId) {
-      try {
-        setOwnerData(JSON.parse(storedStaff))
-      } catch (error) {
-        console.error('GFCompany: Failed to parse stored staff data:', error)
-        localStorage.removeItem('gfcompany_staff')
-        localStorage.removeItem('gfcompany_staffId')
-        navigate('/gfcompanywelcome', { replace: true })
-      }
-    } else {
-      navigate('/gfcompanywelcome', { replace: true })
+    if (!firebaseUser && !firebaseId) {
+      console.log('❌ GFCompany Layout: No Firebase user → redirecting to signin')
+      navigate('/gfcompanysignin', { replace: true })
+      return
     }
-  }, [navigate])
+
+    // If we don't have staff data, redirect to welcome to hydrate
+    if (!staff || !staffId) {
+      console.log('⚠️ GFCompany Layout: No staff data → redirecting to welcome for hydration')
+      navigate('/gfcompanywelcome', { replace: true })
+      return
+    }
+
+    console.log('✅ GFCompany Layout: Staff data loaded via hook')
+  }, [navigate, staff, staffId, firebaseId])
 
   const handleLogout = async () => {
     try {
@@ -68,22 +73,19 @@ function Layout() {
     localStorage.removeItem('gfcompany_companies')
     localStorage.removeItem('gfcompany_role')
     
-    setOwnerData(null)
     navigate('/gfcompanysignin')
   }
 
-  // Get staff info
-  const staffName = ownerData?.name || ''
-  const staffEmail = ownerData?.email || ''
-  const companyName = ownerData?.company?.companyName || 
-                      JSON.parse(localStorage.getItem('gfcompany_company') || '{}')?.companyName || 
-                      'GoFast Company'
-  const staffRole = ownerData?.role || localStorage.getItem('gfcompany_role') || 'founder'
+  // Get staff info from hook
+  const staffName = staff ? `${staff.firstName || ''} ${staff.lastName || ''}`.trim() : ''
+  const staffEmail = staff?.email || ''
+  const companyName = company?.companyName || 'GoFast Company'
+  const staffRole = role || staff?.role || 'founder'
 
   // Define navigation items (all owners have access for now)
   const getMainNavItems = () => {
     return [
-      { to: '/', label: 'GF Command Central' },
+      { to: '/command-central', label: 'GF Command Central' },
       { to: '/roadmap', label: 'Product Roadmap' },
       { to: '/company-roadmap', label: 'Company Roadmap' },
       { to: '/tasks', label: 'Task Management' },
@@ -113,7 +115,7 @@ function Layout() {
             <img src="/logo.jpg" alt="GoFast" className="w-8 h-8 rounded-full" />
             <span>GF Company</span>
           </div>
-          {ownerData && (
+          {staff && (
             <div className="text-xs text-zinc-600 dark:text-zinc-400 space-y-1">
               <div className="flex items-center gap-1">
                 <UserIcon className="h-3 w-3" />
@@ -187,7 +189,7 @@ function Layout() {
           <Button variant="outline" className="w-full" onClick={() => setIsDark((v) => !v)}>
             {isDark ? 'Light Mode' : 'Dark Mode'}
           </Button>
-          {ownerData && (
+          {staff && (
             <Button 
               variant="outline" 
               className="w-full text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20" 
@@ -217,7 +219,7 @@ export default function App() {
         This route isn’t set up yet. Double-check the URL or wire up the page.
       </p>
       <NavLink
-        to="/"
+        to="/command-central"
         className="px-4 py-2 rounded-md bg-sky-500 text-white hover:bg-sky-600 transition"
       >
         Go to Command Central
@@ -235,8 +237,11 @@ export default function App() {
         <Route path="/gfcompanysignup" element={<GFCompanySignup />} />
         <Route path="/gfcompanywelcome" element={<GFCompanyWelcome />} />
         
+        {/* Root redirect - always go through welcome first */}
+        <Route path="/" element={<Navigate to="/gfcompanywelcome" replace />} />
+        
         {/* Protected Routes with Layout */}
-        <Route path="/" element={<Layout />}>
+        <Route path="/command-central" element={<Layout />}>
           <Route index element={<GFCommandCentral />} />
           <Route path="financial-spends" element={<FinancialSpends />} />
           <Route path="financial-projections" element={<FinancialProjections />} />
