@@ -1,7 +1,7 @@
 /**
  * useHydratedStaff - Local-only context reader
  * Reads staff and company context from localStorage
- * No derivation, no fallbacks - just reads what's there
+ * Falls back to persistent company ID if hydration fails
  * Mirrors useHydratedAthlete pattern from gofastfrontend-mvp1
  * 
  * Returns ALL staff fields including:
@@ -10,6 +10,8 @@
  * - company (full company object)
  * - createdAt, updatedAt
  */
+import { GOFAST_COMPANY_ID } from '../constants/company';
+
 export default function useHydratedStaff() {
   // Read staff data (full object with all fields)
   const staffStr = localStorage.getItem('gfcompany_staff');
@@ -39,9 +41,9 @@ export default function useHydratedStaff() {
     staffId,
     firebaseId,
     role, // Quick access to role
-    // Company data
+    // Company data with fallback to persistent company ID
     company: company || companyHQ || staff?.company, // Use company or fallback to staff.company
-    companyId: companyId || companyHQId || staff?.companyId,
+    companyId: companyId || companyHQId || staff?.companyId || GOFAST_COMPANY_ID, // Fallback to persistent ID
     containerId
   };
 }
