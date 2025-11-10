@@ -57,10 +57,22 @@ export default function GFCompanyWelcome() {
         localStorage.setItem('gfcompany_company', JSON.stringify(company));
         localStorage.setItem('gfcompany_companyId', company.id);
         localStorage.setItem('gfcompany_containerId', company.containerId);
+        localStorage.setItem('gfcompany_companyHQ', JSON.stringify(company));
+        localStorage.setItem('gfcompany_companyHQId', company.id);
+
+        // Store Firebase token for API calls
+        const token = await firebaseUser.getIdToken();
+        localStorage.setItem('gfcompany_firebaseToken', token);
+        localStorage.setItem('gfcompany_email', firebaseUser.email || '');
+
+        console.log('✅ GFCompany WELCOME: All data stored in localStorage');
+        console.log('✅ GFCompany WELCOME: Staff ID:', staffData.id);
+        console.log('✅ GFCompany WELCOME: Company ID:', company.id);
+        console.log('✅ GFCompany WELCOME: Role:', staffData.role);
 
         // All complete - route directly to command central
         console.log('✅ GFCompany: Staff fully hydrated with company - routing to command central');
-        navigate('/', { replace: true });
+        navigate('/command-central', { replace: true });
         return;
         
       } catch (error) {
