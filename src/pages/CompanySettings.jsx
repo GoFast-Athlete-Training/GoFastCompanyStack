@@ -21,25 +21,33 @@ export default function CompanySettings() {
   });
 
   useEffect(() => {
-    // Check if company exists in localStorage
-    const storedCompany = localStorage.getItem('gfcompany_company');
-    if (storedCompany) {
+    // Load company data from backend if it exists
+    const loadCompanyData = async () => {
       try {
-        const companyData = JSON.parse(storedCompany);
-        setCompany(companyData);
-        setFormData({
-          companyName: companyData.companyName || '',
-          address: companyData.address || '',
-          city: companyData.city || '',
-          state: companyData.state || '',
-          website: companyData.website || '',
-          description: companyData.description || ''
-        });
+        const response = await gfcompanyapi.get('/api/staff/hydrate');
+        if (response.data.success && response.data.staff?.company) {
+          const companyData = response.data.staff.company;
+          setCompany(companyData);
+          setFormData({
+            companyName: companyData.companyName || '',
+            address: companyData.address || '',
+            city: companyData.city || '',
+            state: companyData.state || '',
+            website: companyData.website || '',
+            description: companyData.description || ''
+          });
+        }
       } catch (error) {
-        console.error('Failed to parse stored company data:', error);
+        console.error('Failed to load company data:', error);
+        // If staff doesn't exist, redirect to welcome
+        if (error.response?.status === 404) {
+          navigate('/gfcompanywelcome');
+        }
       }
-    }
-  }, []);
+    };
+
+    loadCompanyData();
+  }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,8 +77,21 @@ export default function CompanySettings() {
         
         setCompany(companyData);
         
+        // Re-hydrate staff to get updated company data
+        try {
+          const staffResponse = await gfcompanyapi.get('/api/staff/hydrate');
+          if (staffResponse.data.success && staffResponse.data.staff) {
+            localStorage.setItem('gfcompany_staff', JSON.stringify(staffResponse.data.staff));
+            if (staffResponse.data.staff.company) {
+              localStorage.setItem('gfcompany_company', JSON.stringify(staffResponse.data.staff.company));
+            }
+          }
+        } catch (error) {
+          console.error('Failed to re-hydrate staff:', error);
+        }
+        
         // Navigate to command central
-        navigate('/');
+        navigate('/', { replace: true });
       } else {
         console.error('❌ COMPANY SETTINGS: Failed to save company:', response.data.error);
         alert('Failed to save company: ' + (response.data.message || response.data.error));
