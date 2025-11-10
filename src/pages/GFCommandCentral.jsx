@@ -2,6 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Link } from 'react-router-dom'
 import { Map, Target, ListTodo, Building2 } from 'lucide-react'
 import useHydratedStaff from '../hooks/useHydratedStaff'
+import gfcompanyapi from '../lib/gfcompanyapi'
+import { useState } from 'react'
 
 const stats = [
   { label: 'Total Users', value: 0 },
@@ -56,6 +58,100 @@ export default function GFCommandCentral() {
     console.log('🔍 GFCommandCentral: Roadmap Items:', company.roadmapItems?.length || 0);
     console.log('🔍 GFCommandCentral: Contacts:', company.contacts?.length || 0);
     console.log('🔍 GFCommandCentral: Tasks:', company.tasks?.length || 0);
+  }
+
+  // Seed product roadmap items (expose to window for console access)
+  if (typeof window !== 'undefined') {
+    window.seedProductRoadmap = async () => {
+      const items = [
+        {
+          title: 'Join RunCrew',
+          itemType: 'Feature',
+          parentArchitecture: 'RunCrew',
+          roadmapType: 'Product',
+          category: 'Core Feature',
+          whatItDoes: 'Allow users to join RunCrews and participate in group runs',
+          howItHelps: 'Enables community building and group run coordination',
+          priority: 'P1',
+          status: 'In Progress',
+          hoursEstimated: 40
+        },
+        {
+          title: 'Messaging',
+          itemType: 'Feature',
+          parentArchitecture: 'Communication',
+          roadmapType: 'Product',
+          category: 'Core Feature',
+          whatItDoes: 'Direct messaging between users and RunCrew members',
+          howItHelps: 'Enables communication and coordination for runs and events',
+          priority: 'P1',
+          status: 'Not Started',
+          hoursEstimated: 60
+        },
+        {
+          title: 'Dynamic Leaderboard',
+          itemType: 'Feature',
+          parentArchitecture: 'Competition',
+          roadmapType: 'Product',
+          category: 'Engagement',
+          whatItDoes: 'Real-time leaderboard showing top performers in RunCrews and challenges',
+          howItHelps: 'Increases engagement and competition among runners',
+          priority: 'P2',
+          status: 'Not Started',
+          hoursEstimated: 50
+        },
+        {
+          title: 'Sales Partnership',
+          itemType: 'Feature',
+          parentArchitecture: 'Business',
+          roadmapType: 'Product',
+          category: 'Revenue',
+          whatItDoes: 'Partnership management and sales tracking system',
+          howItHelps: 'Enables tracking of partnerships and revenue opportunities',
+          priority: 'P2',
+          status: 'Not Started',
+          hoursEstimated: 80
+        },
+        {
+          title: 'Ambassador Program',
+          itemType: 'Feature',
+          parentArchitecture: 'Community',
+          roadmapType: 'Product',
+          category: 'Growth',
+          whatItDoes: 'Ambassador program management and tracking',
+          howItHelps: 'Enables community growth through ambassador network',
+          priority: 'P2',
+          status: 'Not Started',
+          hoursEstimated: 70
+        }
+      ];
+
+      console.log('🌱 Seeding product roadmap items...');
+      let created = 0;
+      let errors = 0;
+
+      for (const item of items) {
+        try {
+          const response = await gfcompanyapi.post('/api/company/roadmap', item);
+          if (response.data.success) {
+            console.log(`✅ Created: ${item.title}`);
+            created++;
+          } else {
+            console.error(`❌ Failed: ${item.title}`, response.data.error);
+            errors++;
+          }
+        } catch (error) {
+          console.error(`❌ Error: ${item.title}`, error.response?.data || error.message);
+          errors++;
+        }
+      }
+
+      console.log(`\n✅ Done! Created: ${created}, Errors: ${errors}`);
+      alert(`✅ Seeded ${created} roadmap items!${errors > 0 ? ` (${errors} errors)` : ''}\n\nRefresh the page to see them.`);
+      return { created, errors };
+    };
+    
+    console.log('💡 Tip: Run window.seedProductRoadmap() in console to seed product roadmap items');
   }
   
   return (
