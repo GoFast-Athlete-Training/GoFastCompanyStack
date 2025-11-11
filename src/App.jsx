@@ -17,7 +17,7 @@ import { Button } from './components/ui/button'
 import { useEffect, useState } from 'react'
 import { LogOut, User as UserIcon, Settings } from 'lucide-react'
 import { signOutUser } from './config/firebaseConfig'
-import { getAuth } from 'firebase/auth'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import useHydratedStaff from './hooks/useHydratedStaff'
 
 function Layout() {
