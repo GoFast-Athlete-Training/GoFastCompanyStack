@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Button } from './ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card'
-import { X } from 'lucide-react'
+import { X, Info } from 'lucide-react'
 
 export default function RoadmapWeighPointCreator({ isOpen, onClose, onSubmit, editingItem }) {
   const defaultFormData = {
-    itemType: 'Dev Work', // Dev Work or Product Milestone
+    itemType: 'Dev Work',
     featureName: '',
     primaryRepo: '',
     category: 'Core Feature',
@@ -26,22 +26,17 @@ export default function RoadmapWeighPointCreator({ isOpen, onClose, onSubmit, ed
   // Populate form when editing or when modal opens with prefilled data
   useEffect(() => {
     if (editingItem) {
-      // Map old field names to new ones for backward compatibility
       const mappedItem = {
         ...defaultFormData,
         ...editingItem,
-        // Map old fields to new ones
         primaryRepo: editingItem.primaryRepo || editingItem.parentArchitecture || '',
         quickModelScaffolding: editingItem.quickModelScaffolding || editingItem.fieldsData || '',
         apiIntegration: editingItem.apiIntegration || editingItem.howToGet || '',
-        // Keep new fields as-is
         relationalMapping: editingItem.relationalMapping || '',
-        // Map priority from old P0/P1/P2 to new values
         priority: editingItem.priority === 'P0' ? 'Critical Path' :
                   editingItem.priority === 'P1' ? 'Enhanced User Feature' :
                   editingItem.priority === 'P2' ? 'Future Release' :
                   editingItem.priority || 'Enhanced User Feature',
-        // Map itemType
         itemType: editingItem.itemType === 'Feature' ? 'Dev Work' :
                   editingItem.itemType === 'Milestone' ? 'Product Milestone' :
                   editingItem.itemType || 'Dev Work'
@@ -67,11 +62,13 @@ export default function RoadmapWeighPointCreator({ isOpen, onClose, onSubmit, ed
     onClose()
   }
 
+  const isApiCategory = formData.category === 'API Integration'
+
   if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <Card className="max-w-2xl w-full max-h-[90vh] overflow-y-auto mx-4">
+      <Card className="max-w-3xl w-full max-h-[90vh] overflow-y-auto mx-4">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle>{editingItem ? 'Edit Roadmap Item' : 'Add Roadmap Item'}</CardTitle>
@@ -84,186 +81,253 @@ export default function RoadmapWeighPointCreator({ isOpen, onClose, onSubmit, ed
           </Button>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Item Type</label>
-              <select
-                name="itemType"
-                value={formData.itemType}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-md"
-              >
-                <option value="Dev Work">Dev Work</option>
-                <option value="Product Milestone">Product Milestone</option>
-              </select>
-            </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Classification Section */}
+            <div className="space-y-4 border-b pb-4">
+              <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">Classification</h3>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Item Type</label>
+                  <select
+                    name="itemType"
+                    value={formData.itemType}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded-md"
+                  >
+                    <option value="Dev Work">Dev Work</option>
+                    <option value="Product Milestone">Product Milestone</option>
+                  </select>
+                </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">{formData.itemType === 'Product Milestone' ? 'Milestone Name' : 'Feature Name'}</label>
-              <input
-                type="text"
-                name="featureName"
-                value={formData.featureName}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border rounded-md"
-                placeholder={formData.itemType === 'Product Milestone' ? 'e.g., Get on GooglePlay' : 'e.g., Join RunCrew'}
-              />
-            </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Category</label>
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded-md"
+                  >
+                    <option value="Core Feature">Core Feature</option>
+                    <option value="Frontend Demo">Frontend Demo</option>
+                    <option value="API Integration">API Integration</option>
+                    <option value="Backend Scaffolding">Backend Scaffolding</option>
+                  </select>
+                </div>
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">Primary Repo</label>
-              <input
-                type="text"
-                name="primaryRepo"
-                value={formData.primaryRepo}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-md"
-                placeholder="e.g., mvp1, eventslanding, companystack"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">Category</label>
-              <select
-                name="category"
-                value={formData.category}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-md"
-              >
-                <option value="Core Feature">Core Feature</option>
-                <option value="Frontend Demo">Frontend Demo</option>
-                <option value="API Integration">API Integration</option>
-                <option value="Backend Scaffolding">Backend Scaffolding</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">What it does (User value)</label>
-              <textarea
-                name="whatItDoes"
-                value={formData.whatItDoes}
-                onChange={handleChange}
-                required
-                rows="2"
-                className="w-full px-3 py-2 border rounded-md"
-                placeholder="What does this feature do for users?"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">How it helps the overall build</label>
-              <textarea
-                name="howItHelps"
-                value={formData.howItHelps}
-                onChange={handleChange}
-                rows="2"
-                className="w-full px-3 py-2 border rounded-md"
-                placeholder="e.g., Enables other features, improves UX, reduces friction, etc."
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">Quick Model Scaffolding</label>
-              <textarea
-                name="quickModelScaffolding"
-                value={formData.quickModelScaffolding}
-                onChange={handleChange}
-                rows="2"
-                className="w-full px-3 py-2 border rounded-md"
-                placeholder="How does this fit into the architecture? What models/data structures are needed?"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">Relational Mapping</label>
-              <textarea
-                name="relationalMapping"
-                value={formData.relationalMapping}
-                onChange={handleChange}
-                rows="2"
-                className="w-full px-3 py-2 border rounded-md"
-                placeholder="Does this bolt on to athleteId? What's the relational mapping? (e.g., Athlete -> RunCrewMembership -> RunCrew)"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">API Integration</label>
-              <textarea
-                name="apiIntegration"
-                value={formData.apiIntegration}
-                onChange={handleChange}
-                rows="2"
-                className="w-full px-3 py-2 border rounded-md"
-                placeholder="API-specific integration (e.g., 'hit garmin backend with a token')"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">Prerequisites/Setup</label>
-              <textarea
-                name="prerequisites"
-                value={formData.prerequisites}
-                onChange={handleChange}
-                rows="2"
-                className="w-full px-3 py-2 border rounded-md"
-                placeholder="Setup, research, account creation, auth - can include links (e.g., 'apply for token: https://...')"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Hours Estimated</label>
+                <label className="block text-sm font-medium mb-1">
+                  {formData.itemType === 'Product Milestone' ? 'Milestone Name' : 'Feature Name'}
+                </label>
                 <input
-                  type="number"
-                  name="hoursEst"
-                  value={formData.hoursEst}
+                  type="text"
+                  name="featureName"
+                  value={formData.featureName}
                   onChange={handleChange}
+                  required
                   className="w-full px-3 py-2 border rounded-md"
+                  placeholder={formData.itemType === 'Product Milestone' ? 'e.g., Get on GooglePlay' : 'e.g., Join RunCrew'}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1">Target Date</label>
+                <label className="block text-sm font-medium mb-1">Primary Repo</label>
                 <input
-                  type="date"
-                  name="targetDate"
-                  value={formData.targetDate}
+                  type="text"
+                  name="primaryRepo"
+                  value={formData.primaryRepo}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border rounded-md"
-                  min={new Date().toISOString().split('T')[0]}
+                  placeholder="e.g., mvp1, eventslanding, companystack"
+                />
+                <p className="text-xs text-zinc-500 mt-1">Which repository does this work live in?</p>
+              </div>
+            </div>
+
+            {/* Core Details Section */}
+            <div className="space-y-4 border-b pb-4">
+              <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">Core Details</h3>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">What it does (User value)</label>
+                <textarea
+                  name="whatItDoes"
+                  value={formData.whatItDoes}
+                  onChange={handleChange}
+                  required
+                  rows="3"
+                  className="w-full px-3 py-2 border rounded-md"
+                  placeholder="What does this feature do for users? What problem does it solve?"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">How it helps the overall build</label>
+                <textarea
+                  name="howItHelps"
+                  value={formData.howItHelps}
+                  onChange={handleChange}
+                  rows="2"
+                  className="w-full px-3 py-2 border rounded-md"
+                  placeholder="e.g., Enables other features, improves UX, reduces friction, etc."
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            {/* Architecture Section */}
+            <div className="space-y-4 border-b pb-4">
+              <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">Architecture & Data</h3>
+              
               <div>
-                <label className="block text-sm font-medium mb-1">Priority</label>
-                <select
-                  name="priority"
-                  value={formData.priority}
+                <label className="block text-sm font-medium mb-1">
+                  Model Scaffolding
+                  <span className="text-xs text-zinc-500 ml-2 font-normal">(Quick architecture notes)</span>
+                </label>
+                <textarea
+                  name="quickModelScaffolding"
+                  value={formData.quickModelScaffolding}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-md"
-                >
-                  <option value="Critical Path">Critical Path</option>
-                  <option value="Enhanced User Feature">Enhanced User Feature</option>
-                  <option value="Future Release">Future Release</option>
-                  <option value="Revenue Builder">Revenue Builder</option>
-                </select>
+                  rows="3"
+                  className="w-full px-3 py-2 border rounded-md font-mono text-sm"
+                  placeholder="Example:&#10;RunCrewMembership (junction table)&#10;  - athleteId (FK)&#10;  - runCrewId (FK)&#10;  - joinedAt (DateTime)"
+                />
+                <p className="text-xs text-zinc-500 mt-1">What models/tables/data structures are needed?</p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1">Status</label>
-                <select
-                  name="status"
-                  value={formData.status}
+                <label className="block text-sm font-medium mb-1">
+                  Relational Mapping
+                  <span className="text-xs text-zinc-500 ml-2 font-normal">(How does this connect?)</span>
+                </label>
+                <textarea
+                  name="relationalMapping"
+                  value={formData.relationalMapping}
                   onChange={handleChange}
+                  rows="2"
                   className="w-full px-3 py-2 border rounded-md"
-                >
-                  <option value="Not Started">Not Started</option>
-                  <option value="In Progress">In Progress</option>
-                  <option value="Done">Done</option>
-                </select>
+                  placeholder="Example: Athlete → RunCrewMembership → RunCrew (many-to-many)"
+                />
+                <div className="mt-1 p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-xs text-blue-700 dark:text-blue-300 flex items-start gap-2">
+                  <Info className="h-3 w-3 mt-0.5 flex-shrink-0" />
+                  <span>Does this bolt on to athleteId? What's the relationship chain?</span>
+                </div>
+              </div>
+            </div>
+
+            {/* API Integration Section - Conditional */}
+            {isApiCategory && (
+              <div className="space-y-4 border-b pb-4 bg-blue-50/50 dark:bg-blue-900/10 p-4 rounded-lg">
+                <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 flex items-center gap-2">
+                  <span>API Integration Details</span>
+                  <span className="text-xs font-normal text-blue-600 dark:text-blue-400">(Required for API Integration)</span>
+                </h3>
+                
+                <div>
+                  <label className="block text-sm font-medium mb-1">API Endpoint & Method</label>
+                  <textarea
+                    name="apiIntegration"
+                    value={formData.apiIntegration}
+                    onChange={handleChange}
+                    rows="3"
+                    className="w-full px-3 py-2 border rounded-md font-mono text-sm"
+                    placeholder="Example:&#10;POST /api/garmin/sync&#10;GET /api/garmin/activities&#10;Headers: Authorization Bearer {token}"
+                  />
+                  <p className="text-xs text-zinc-500 mt-1">What endpoints, methods, and auth are needed?</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1">Prerequisites & Setup</label>
+                  <textarea
+                    name="prerequisites"
+                    value={formData.prerequisites}
+                    onChange={handleChange}
+                    rows="3"
+                    className="w-full px-3 py-2 border rounded-md"
+                    placeholder="Example:&#10;1. Apply for API access: https://developer.garmin.com/...&#10;2. Get OAuth credentials&#10;3. Set up token refresh flow"
+                  />
+                  <p className="text-xs text-zinc-500 mt-1">What needs to be set up first? Include links if applicable.</p>
+                </div>
+              </div>
+            )}
+
+            {/* Prerequisites Section - Only show if NOT API Integration */}
+            {!isApiCategory && (
+              <div className="space-y-4 border-b pb-4">
+                <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">Prerequisites</h3>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Setup & Dependencies</label>
+                  <textarea
+                    name="prerequisites"
+                    value={formData.prerequisites}
+                    onChange={handleChange}
+                    rows="2"
+                    className="w-full px-3 py-2 border rounded-md"
+                    placeholder="What needs to be in place first? Setup, research, account creation, auth, etc. Include links if applicable."
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Planning Section */}
+            <div className="space-y-4 border-b pb-4">
+              <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">Planning</h3>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Hours Estimated</label>
+                  <input
+                    type="number"
+                    name="hoursEst"
+                    value={formData.hoursEst}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded-md"
+                    placeholder="40"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1">Target Date</label>
+                  <input
+                    type="date"
+                    name="targetDate"
+                    value={formData.targetDate}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded-md"
+                    min={new Date().toISOString().split('T')[0]}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Priority</label>
+                  <select
+                    name="priority"
+                    value={formData.priority}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded-md"
+                  >
+                    <option value="Critical Path">Critical Path</option>
+                    <option value="Enhanced User Feature">Enhanced User Feature</option>
+                    <option value="Future Release">Future Release</option>
+                    <option value="Revenue Builder">Revenue Builder</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1">Status</label>
+                  <select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded-md"
+                  >
+                    <option value="Not Started">Not Started</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Done">Done</option>
+                  </select>
+                </div>
               </div>
             </div>
 
