@@ -11,18 +11,19 @@ const gfcompanyapi = axios.create({
   // No withCredentials - we use Bearer tokens, not cookies
 });
 
-// Request interceptor - AUTOMATICALLY adds Firebase token to all requests
+// Request interceptor - Firebase automatically handles token refresh
 gfcompanyapi.interceptors.request.use(
   async (config) => {
     // Get Firebase auth instance
     const firebaseAuth = getAuth();
     const user = firebaseAuth.currentUser;
     
-    // If user is authenticated, add token to request
+    // If user is authenticated, Firebase automatically refreshes token if needed
     if (user) {
       try {
-        const token = await user.getIdToken(); // Firebase SDK gets fresh token
-        config.headers.Authorization = `Bearer ${token}`; // Automatically added!
+        // Firebase SDK automatically refreshes expired tokens
+        const token = await user.getIdToken();
+        config.headers.Authorization = `Bearer ${token}`;
       } catch (error) {
         console.error('❌ GFCompany: Failed to get Firebase token:', error);
       }
@@ -47,31 +48,12 @@ gfcompanyapi.interceptors.response.use(
   error => {
     console.error('❌ GFCompany API Error:', error.response?.status, error.response?.data || error.message);
     
-    // Handle 401 (Unauthorized) - token expired or invalid
+    // Handle 401 (Unauthorized) - Firebase will handle token refresh automatically
+    // Just clear CompanyStaff data and redirect (Firebase auth persists automatically)
     if (error.response?.status === 401) {
-      console.error('🚫 GFCompany: Unauthorized - token expired or invalid');
+      console.error('🚫 GFCompany: Unauthorized - clearing CompanyStaff data');
       
-      // Try to refresh token first
-      const firebaseAuth = getAuth();
-      const user = firebaseAuth.currentUser;
-      
-      if (user) {
-        try {
-          // Force token refresh
-          const newToken = await user.getIdToken(true);
-          console.log('✅ GFCompany: Token refreshed, retrying request');
-          
-          // Retry the original request with new token
-          if (error.config) {
-            error.config.headers.Authorization = `Bearer ${newToken}`;
-            return gfcompanyapi.request(error.config);
-          }
-        } catch (refreshError) {
-          console.error('❌ GFCompany: Token refresh failed:', refreshError);
-        }
-      }
-      
-      // If refresh failed or no user, clear ONLY CompanyStaff data (not Firebase auth)
+      // Clear ONLY CompanyStaff data (Firebase auth persists automatically)
       const keysToRemove = [
         'gfcompany_staffId',
         'gfcompany_staff',
@@ -84,8 +66,7 @@ gfcompanyapi.interceptors.response.use(
       ];
       keysToRemove.forEach(key => localStorage.removeItem(key));
       
-      // Redirect to signin (not signup) - user might just need to re-auth
-      console.log('🚫 GFCompany: Redirecting to signin');
+      // Redirect to signin - Firebase will handle re-auth if needed
       window.location.href = '/gfcompanysignin';
     }
     
