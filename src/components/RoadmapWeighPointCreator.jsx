@@ -196,7 +196,7 @@ export default function RoadmapWeighPointCreator({ isOpen, onClose, onSubmit, ed
                   onChange={handleChange}
                   rows="3"
                   className="w-full px-3 py-2 border rounded-md font-mono text-sm"
-                  placeholder="Example:&#10;RunCrewMembership (junction table)&#10;  - athleteId (FK)&#10;  - runCrewId (FK)&#10;  - joinedAt (DateTime)"
+                  placeholder="RunCrewMembership (junction table)&#10;  - athleteId (FK)&#10;  - runCrewId (FK)&#10;  - joinedAt (DateTime)"
                 />
                 <p className="text-xs text-zinc-500 mt-1">What models/tables/data structures are needed?</p>
               </div>
@@ -212,7 +212,7 @@ export default function RoadmapWeighPointCreator({ isOpen, onClose, onSubmit, ed
                   onChange={handleChange}
                   rows="2"
                   className="w-full px-3 py-2 border rounded-md"
-                  placeholder="Example: Athlete → RunCrewMembership → RunCrew (many-to-many)"
+                  placeholder="Athlete → RunCrewMembership → RunCrew (many-to-many)"
                 />
                 <div className="mt-1 p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-xs text-blue-700 dark:text-blue-300 flex items-start gap-2">
                   <Info className="h-3 w-3 mt-0.5 flex-shrink-0" />
@@ -237,7 +237,7 @@ export default function RoadmapWeighPointCreator({ isOpen, onClose, onSubmit, ed
                     onChange={handleChange}
                     rows="3"
                     className="w-full px-3 py-2 border rounded-md font-mono text-sm"
-                    placeholder="Example:&#10;POST /api/garmin/sync&#10;GET /api/garmin/activities&#10;Headers: Authorization Bearer {token}"
+                    placeholder="POST /api/garmin/sync&#10;GET /api/garmin/activities&#10;Headers: Authorization Bearer {token}"
                   />
                   <p className="text-xs text-zinc-500 mt-1">What endpoints, methods, and auth are needed?</p>
                 </div>
@@ -250,7 +250,7 @@ export default function RoadmapWeighPointCreator({ isOpen, onClose, onSubmit, ed
                     onChange={handleChange}
                     rows="3"
                     className="w-full px-3 py-2 border rounded-md"
-                    placeholder="Example:&#10;1. Apply for API access: https://developer.garmin.com/...&#10;2. Get OAuth credentials&#10;3. Set up token refresh flow"
+                    placeholder="1. Apply for API access: https://developer.garmin.com/...&#10;2. Get OAuth credentials&#10;3. Set up token refresh flow"
                   />
                   <p className="text-xs text-zinc-500 mt-1">What needs to be set up first? Include links if applicable.</p>
                 </div>
