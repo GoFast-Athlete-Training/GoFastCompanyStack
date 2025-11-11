@@ -153,6 +153,24 @@ export default function ProductRoadmap() {
     }
   }
 
+  // Prefill form when opening modal if no items exist
+  const handleOpenModal = () => {
+    if (roadmapItems.length === 0) {
+      // Prefill with Join RunCrew data
+      setEditingItem({
+        featureName: 'Join RunCrew',
+        roadmapType: 'Product',
+        featureType: 'Product',
+        priority: 'P0',
+        status: 'In Progress',
+        hoursEst: 40,
+        whatItDoes: 'Users can join RunCrews via join code - core onboarding feature',
+        howItHelps: 'Critical path to get users on platform - enables RunCrew growth'
+      })
+    }
+    setModalOpen(true)
+  }
+
   if (loading) {
     return (
       <div className="space-y-6">
@@ -474,7 +492,7 @@ export default function ProductRoadmap() {
             {roadmapItems.length} {roadmapItems.length === 1 ? 'item' : 'items'} total
           </p>
         </div>
-        <Button onClick={() => setModalOpen(true)} disabled={saving}>
+        <Button onClick={handleOpenModal} disabled={saving}>
           <Plus className="h-4 w-4 mr-2" />
           Add Roadmap Item
         </Button>

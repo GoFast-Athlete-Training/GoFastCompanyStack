@@ -24,10 +24,14 @@ export default function RoadmapWeighPointCreator({ isOpen, onClose, onSubmit, ed
 
   const [formData, setFormData] = useState(defaultFormData)
 
-  // Populate form when editing
+  // Populate form when editing or when modal opens with prefilled data
   useEffect(() => {
     if (editingItem) {
-      setFormData(editingItem)
+      // Merge with defaultFormData to ensure all fields are set
+      setFormData({
+        ...defaultFormData,
+        ...editingItem
+      })
     } else {
       setFormData(defaultFormData)
     }

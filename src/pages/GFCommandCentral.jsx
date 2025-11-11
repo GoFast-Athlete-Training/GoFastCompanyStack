@@ -1,10 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
-import { Button } from '../components/ui/button'
 import { Link } from 'react-router-dom'
-import { Map, Target, ListTodo, Building2, Sparkles } from 'lucide-react'
+import { Map, Target, ListTodo, Building2 } from 'lucide-react'
 import useHydratedStaff from '../hooks/useHydratedStaff'
-import gfcompanyapi from '../lib/gfcompanyapi'
-import { useState, useEffect } from 'react'
 
 const stats = [
   { label: 'Total Users', value: 0 },
@@ -48,76 +45,17 @@ const settingsOptions = [
 
 export default function GFCommandCentral() {
   const { staff, staffId, company, companyId, role } = useHydratedStaff();
-  const [seeding, setSeeding] = useState(false);
-  const [hasRoadmapItems, setHasRoadmapItems] = useState(false);
-  const [checking, setChecking] = useState(true);
   
   // Debug: Log what we actually have
   console.log('🔍 GFCommandCentral: Staff loaded:', !!staff, 'Staff ID:', staffId);
   console.log('🔍 GFCommandCentral: Company loaded:', !!company, 'Company ID:', companyId);
   console.log('🔍 GFCommandCentral: Role:', role);
   
-  // Check if roadmap items exist
-  useEffect(() => {
-    const checkRoadmapItems = async () => {
-      try {
-        const response = await gfcompanyapi.get('/api/company/roadmap?roadmapType=Product');
-        if (response.data.success) {
-          setHasRoadmapItems(response.data.roadmapItems?.length > 0);
-        }
-      } catch (error) {
-        console.error('Error checking roadmap items:', error);
-      } finally {
-        setChecking(false);
-      }
-    };
-    
-    if (companyId) {
-      checkRoadmapItems();
-    }
-  }, [companyId]);
-  
   if (company) {
     console.log('🔍 GFCommandCentral: Company Name:', company.companyName);
     console.log('🔍 GFCommandCentral: Contacts:', company.contacts?.length || 0);
     console.log('🔍 GFCommandCentral: Tasks:', company.tasks?.length || 0);
   }
-
-  const seedProductRoadmap = async () => {
-    setSeeding(true);
-    
-    // Just seed the first item - SIMPLE: title, hours, priority, status
-    const item = {
-      title: 'Join RunCrew',
-      roadmapType: 'Product',
-      priority: 'P0', // Critical path - get users on platform
-      status: 'In Progress',
-      hoursEstimated: 40,
-      whatItDoes: 'Users can join RunCrews via join code - core onboarding feature',
-      howItHelps: 'Critical path to get users on platform - enables RunCrew growth'
-    };
-
-    console.log('🌱 Seeding product roadmap item:', item.title);
-    console.log('📋 Fields:', item);
-
-    try {
-      const response = await gfcompanyapi.post('/api/company/roadmap', item);
-      if (response.data.success) {
-        console.log(`✅ Created: ${item.title}`, response.data.roadmapItem);
-        alert(`✅ Created roadmap item: ${item.title}\n\nRefresh to see it, then test upsert!`);
-        setSeeding(false);
-        window.location.reload();
-      } else {
-        console.error(`❌ Failed:`, response.data.error);
-        alert(`❌ Failed to create: ${response.data.error}`);
-        setSeeding(false);
-      }
-    } catch (error) {
-      console.error(`❌ Error:`, error.response?.data || error.message);
-      alert(`❌ Error: ${error.response?.data?.message || error.message}`);
-      setSeeding(false);
-    }
-  };
   
   return (
     <div className="space-y-6">
@@ -126,17 +64,6 @@ export default function GFCommandCentral() {
           <h1 className="text-4xl font-bold mb-2">GF Command Central</h1>
           <p className="text-zinc-600">Manage GoFast growth, strategy, and execution</p>
         </div>
-        {/* Show seed button if no roadmap items exist (or while checking) */}
-        {!checking && !hasRoadmapItems && (
-          <Button 
-            onClick={seedProductRoadmap} 
-            disabled={seeding}
-            className="flex items-center gap-2"
-          >
-            <Sparkles className="h-4 w-4" />
-            {seeding ? 'Seeding...' : 'Seed Product Roadmap'}
-          </Button>
-        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
