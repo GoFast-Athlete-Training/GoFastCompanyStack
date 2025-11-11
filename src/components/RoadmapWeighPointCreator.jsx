@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Button } from './ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card'
 import { X, Info } from 'lucide-react'
+import { getRepoOptions } from '../config/repoConfig'
 
 export default function RoadmapWeighPointCreator({ isOpen, onClose, onSubmit, editingItem }) {
   const defaultFormData = {
@@ -133,14 +134,19 @@ export default function RoadmapWeighPointCreator({ isOpen, onClose, onSubmit, ed
 
               <div>
                 <label className="block text-sm font-medium mb-1">Primary Repo</label>
-                <input
-                  type="text"
+                <select
                   name="primaryRepo"
                   value={formData.primaryRepo}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border rounded-md"
-                  placeholder="e.g., mvp1, eventslanding, companystack"
-                />
+                >
+                  <option value="">Select repository...</option>
+                  {getRepoOptions().map((repo) => (
+                    <option key={repo.value} value={repo.value}>
+                      {repo.label} - {repo.description}
+                    </option>
+                  ))}
+                </select>
                 <p className="text-xs text-zinc-500 mt-1">Which repository does this work live in?</p>
               </div>
             </div>
