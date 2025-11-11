@@ -9,7 +9,7 @@ export default function RoadmapWeighPointCreator({ isOpen, onClose, onSubmit, ed
     featureName: '',
     parentArchitecture: '',
     featureType: 'Product',
-    category: 'Frontend Demo',
+    category: 'Core Feature',
     whatItDoes: '',
     howItHelps: '',
     fieldsData: '',
@@ -131,11 +131,10 @@ export default function RoadmapWeighPointCreator({ isOpen, onClose, onSubmit, ed
                 onChange={handleChange}
                 className="w-full px-3 py-2 border rounded-md"
               >
+                <option value="Core Feature">Core Feature</option>
                 <option value="Frontend Demo">Frontend Demo</option>
                 <option value="API Integration">API Integration</option>
                 <option value="Backend Scaffolding">Backend Scaffolding</option>
-                <option value="User Testing">User Testing</option>
-                <option value="Release">Release</option>
               </select>
             </div>
 

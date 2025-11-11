@@ -102,7 +102,7 @@ export default function ProductRoadmap() {
       itemType: item.itemType || 'Feature',
       parentArchitecture: item.parentArchitecture || null,
       roadmapType: item.featureType || item.roadmapType || 'Product',
-      category: item.category || 'Frontend Demo',
+      category: item.category || 'Core Feature',
       whatItDoes: item.whatItDoes || null,
       howItHelps: item.howItHelps || null,
       fieldsData: item.fieldsData || null,
