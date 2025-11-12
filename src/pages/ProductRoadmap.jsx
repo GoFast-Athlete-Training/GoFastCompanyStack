@@ -197,8 +197,8 @@ export default function ProductRoadmap() {
     try {
       const backendData = mapItemToBackend(item)
 
-      if (editingItem) {
-        // Update existing item
+      if (editingItem && editingItem.id) {
+        // Update existing item (must have an ID)
         console.log('🚀 PRODUCT ROADMAP: Updating item:', editingItem.id)
         const response = await gfcompanyapi.put(`/api/company/roadmap/${editingItem.id}`, backendData)
 
@@ -288,17 +288,22 @@ export default function ProductRoadmap() {
   // Prefill form when opening modal if no items exist
   const handleOpenModal = () => {
     if (roadmapItems.length === 0) {
-      // Prefill with Join RunCrew data
+      // Prefill with complete Join RunCrew data for testing
       setEditingItem({
         featureName: 'Join RunCrew',
         itemType: 'Dev Work',
-        primaryRepo: 'mvp1',
+        primaryRepo: 'MVP1',
         category: 'Core Feature',
         priority: 'Critical Path',
         status: 'In Progress',
         hoursEst: 40,
+        targetDate: '',
         whatItDoes: 'Users can join RunCrews via join code - core onboarding feature',
-        howItHelps: 'Critical path to get users on platform - enables RunCrew growth'
+        howItHelps: 'Critical path to get users on platform - enables RunCrew growth',
+        quickModelScaffolding: 'RunCrewMembership (junction table)\n  - athleteId (FK)\n  - runCrewId (FK)\n  - joinedAt (DateTime)\n  - role (String?)',
+        relationalMapping: 'Athlete → RunCrewMembership → RunCrew (many-to-many)',
+        apiIntegration: '',
+        prerequisites: '1. RunCrew must exist with unique joinCode\n2. User must be authenticated\n3. JoinCode validation endpoint ready'
       })
     }
     setModalOpen(true)
