@@ -1,45 +1,48 @@
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Link } from 'react-router-dom'
-import { Map, Target, ListTodo, Building2 } from 'lucide-react'
+import { Map, Target, ListTodo, Building2, DollarSign, TrendingUp, Users, BarChart3, Settings } from 'lucide-react'
 import useHydratedStaff from '../hooks/useHydratedStaff'
 
-const stats = [
-  { label: 'Total Users', value: 0 },
-  { label: 'Monthly Burn', value: '$0' },
-  { label: 'Runway', value: '--' },
-]
-
-const mainNavOptions = [
+const featureOptions = [
   {
     title: 'Product Roadmap',
-    description: 'Company-wide product roadmap items',
-    icon: <Map className="h-8 w-8" />,
-    path: '/roadmap',
-    color: 'bg-purple-100 text-purple-600'
+    icon: Map,
+    path: '/command-central/roadmap',
   },
   {
     title: 'Company Roadmap',
-    description: 'Strategic company initiatives and goals',
-    icon: <Target className="h-8 w-8" />,
-    path: '/company-roadmap',
-    color: 'bg-blue-100 text-blue-600'
+    icon: Target,
+    path: '/command-central/company-roadmap',
   },
   {
     title: 'Task Management',
-    description: 'Manage tasks by department and priority',
-    icon: <ListTodo className="h-8 w-8" />,
-    path: '/tasks',
-    color: 'bg-orange-100 text-orange-600'
+    icon: ListTodo,
+    path: '/command-central/tasks',
   },
-]
-
-const settingsOptions = [
+  {
+    title: 'Financial Spending',
+    icon: DollarSign,
+    path: '/command-central/financial-spends',
+  },
+  {
+    title: 'Financial Projections',
+    icon: TrendingUp,
+    path: '/command-central/financial-projections',
+  },
+  {
+    title: 'Company CRM',
+    icon: Users,
+    path: '/command-central/crm',
+  },
+  {
+    title: 'User Metrics',
+    icon: BarChart3,
+    path: '/command-central/metrics',
+  },
   {
     title: 'Company Settings',
-    description: 'Manage company details and configuration',
-    icon: <Building2 className="h-8 w-8" />,
-    path: '/company-settings',
-    color: 'bg-sky-100 text-sky-600'
+    icon: Settings,
+    path: '/command-central/company-settings',
   },
 ]
 
@@ -58,65 +61,37 @@ export default function GFCommandCentral() {
   }
   
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-start">
-        <div>
-          <h1 className="text-4xl font-bold mb-2">GF Command Central</h1>
-          <p className="text-zinc-600">Manage GoFast growth, strategy, and execution</p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {stats.map((s) => (
-          <Card key={s.label}>
-            <CardHeader>
-              <CardTitle className="text-base text-zinc-500">{s.label}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{s.value}</div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {mainNavOptions.map((option) => (
-          <Link key={option.path} to={option.path}>
-            <Card className="hover:shadow-lg transition cursor-pointer">
-              <CardHeader>
-                <div className={`w-16 h-16 rounded-lg flex items-center justify-center ${option.color} mb-4`}>
-                  {option.icon}
-                </div>
-                <CardTitle>{option.title}</CardTitle>
-                <CardContent>
-                  <p className="text-zinc-600 text-sm">{option.description}</p>
-                </CardContent>
-              </CardHeader>
-            </Card>
-          </Link>
-        ))}
-      </div>
-
-      {/* Settings Section */}
-      <div className="mt-8">
-        <h2 className="text-2xl font-bold mb-4">Settings</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {settingsOptions.map((option) => (
-            <Link key={option.path} to={option.path}>
-              <Card className="hover:shadow-lg transition cursor-pointer">
-                <CardHeader>
-                  <div className={`w-16 h-16 rounded-lg flex items-center justify-center ${option.color} mb-4`}>
-                    {option.icon}
+    <div className="flex items-center justify-center min-h-[calc(100vh-3rem)] p-6">
+      <div className="w-full max-w-2xl">
+        <Card className="bg-white shadow-lg">
+          <CardHeader className="text-center pb-8">
+            <div className="flex justify-center mb-6">
+              <img src="/logo.jpg" alt="GoFast" className="h-16 w-16 rounded-full" />
+            </div>
+            <CardTitle className="text-3xl font-bold mb-2">Company HQ Cockpit</CardTitle>
+            <p className="text-zinc-600 text-base mt-2">
+              Select a feature from the sidebar to get started
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {featureOptions.map((option) => {
+              const Icon = option.icon
+              return (
+                <Link key={option.path} to={option.path}>
+                  <div className="flex items-center gap-3 p-4 rounded-lg border border-zinc-200 hover:bg-zinc-50 hover:shadow-md transition cursor-pointer">
+                    <div className="p-2 rounded-md bg-zinc-100">
+                      <Icon className="h-5 w-5 text-zinc-600" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-medium text-zinc-900">{option.title}</div>
+                      <div className="text-sm text-zinc-500">Click to manage</div>
+                    </div>
                   </div>
-                  <CardTitle>{option.title}</CardTitle>
-                  <CardContent>
-                    <p className="text-zinc-600 text-sm">{option.description}</p>
-                  </CardContent>
-                </CardHeader>
-              </Card>
-            </Link>
-          ))}
-        </div>
+                </Link>
+              )
+            })}
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

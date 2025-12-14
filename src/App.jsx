@@ -38,11 +38,25 @@ function Layout() {
     // Use onAuthStateChanged to wait for Firebase auth state to be ready
     // auth.currentUser is synchronous and might be null even if user is authenticated
     const auth = getAuth()
+    let redirectTimeout
+    
     const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
+      // Clear any pending redirects
+      if (redirectTimeout) {
+        clearTimeout(redirectTimeout)
+      }
+      
+      // Check localStorage directly to avoid timing issues
+      const storedFirebaseId = localStorage.getItem('gfcompany_firebaseId')
+      const storedStaffId = localStorage.getItem('gfcompany_staffId')
+      const storedStaff = localStorage.getItem('gfcompany_staff')
+      
       // If no Firebase user AND no firebaseId in localStorage, redirect to signin
-      if (!firebaseUser && !firebaseId) {
+      if (!firebaseUser && !storedFirebaseId) {
         console.log('❌ GFCompany Layout: No Firebase user → redirecting to signin')
-        navigate('/gfcompanysignin', { replace: true })
+        redirectTimeout = setTimeout(() => {
+          navigate('/gfcompanysignin', { replace: true })
+        }, 100)
         return
       }
 
@@ -50,11 +64,24 @@ function Layout() {
       // BUT allow access to company-settings page (it can create company)
       const currentPath = window.location.pathname
       const isCompanySettings = currentPath.includes('/company-settings')
+      const isWelcomePage = currentPath.includes('/gfcompanywelcome')
+      const isSigninPage = currentPath.includes('/gfcompanysignin')
+      const isSignupPage = currentPath.includes('/gfcompanysignup')
       
-      if (!staff || !staffId) {
+      // Don't redirect if we're already on auth pages
+      if (isWelcomePage || isSigninPage || isSignupPage) {
+        return
+      }
+      
+      // Check both hook values and localStorage to avoid race conditions
+      const hasStaffData = (staff && staffId) || (storedStaff && storedStaffId)
+      
+      if (!hasStaffData) {
         if (!isCompanySettings) {
           console.log('⚠️ GFCompany Layout: No staff data → redirecting to welcome for hydration')
-          navigate('/gfcompanywelcome', { replace: true })
+          redirectTimeout = setTimeout(() => {
+            navigate('/gfcompanywelcome', { replace: true })
+          }, 100)
           return
         }
       }
@@ -62,8 +89,13 @@ function Layout() {
       console.log('✅ GFCompany Layout: Staff data loaded via hook')
     })
 
-    // Cleanup listener
-    return () => unsubscribe()
+    // Cleanup listener and timeout
+    return () => {
+      if (redirectTimeout) {
+        clearTimeout(redirectTimeout)
+      }
+      unsubscribe()
+    }
   }, [navigate, staff, staffId, firebaseId])
 
   const handleLogout = async () => {
@@ -97,19 +129,18 @@ function Layout() {
   // Routes are nested under /command-central, so use relative paths
   const getMainNavItems = () => {
     return [
-      { to: '/command-central', label: 'GF Command Central' },
-      { to: '/command-central/roadmap', label: 'Product Roadmap' },
-      { to: '/command-central/company-roadmap', label: 'Company Roadmap' },
-      { to: '/command-central/tasks', label: 'Task Management' },
+      { to: '/command-central/roadmap', label: 'Product Roadmap', icon: Map },
+      { to: '/command-central/company-roadmap', label: 'Company Roadmap', icon: Target },
+      { to: '/command-central/tasks', label: 'Task Management', icon: ListTodo },
     ]
   }
 
   const getToolsNavItems = () => {
     return [
-      { to: '/command-central/financial-spends', label: 'Financial Spending' },
-      { to: '/command-central/financial-projections', label: 'Financial Projections' },
-      { to: '/command-central/crm', label: 'Company CRM' },
-      { to: '/command-central/metrics', label: 'User Metrics' },
+      { to: '/command-central/financial-spends', label: 'Financial Spending', icon: DollarSign },
+      { to: '/command-central/financial-projections', label: 'Financial Projections', icon: TrendingUp },
+      { to: '/command-central/crm', label: 'Company CRM', icon: Users },
+      { to: '/command-central/metrics', label: 'User Metrics', icon: BarChart3 },
     ]
   }
 
@@ -213,10 +244,8 @@ function Layout() {
           )}
         </div>
       </aside>
-      <main className="p-6 bg-zinc-50 dark:bg-zinc-950 dark:text-zinc-100">
-        <div className="max-w-6xl mx-auto">
-          <Outlet />
-        </div>
+      <main className="p-6 bg-gradient-to-br from-blue-50 via-zinc-50 to-blue-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 dark:text-zinc-100 min-h-screen">
+        <Outlet />
       </main>
     </div>
   )
